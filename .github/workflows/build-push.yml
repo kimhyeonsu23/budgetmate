@@ -36,9 +36,9 @@ jobs:
 
       # config-server
       - name: Build config-server-image
-        run: docker build -t khs23/config-server:latest ./back-end/config-server
+        run: docker build -t khs23/config-server-image:latest ./back-end/config-server
       - name: Push config-server-image
-        run: docker push khs23/config-server:latest
+        run: docker push khs23/config-server-image:latest
 
       # user-service
       - name: Build user-service-image
@@ -50,7 +50,7 @@ jobs:
       - name: Build receipt-service-image
         run: docker build -t khs23/receipt-service-image:latest ./back-end/receipt-service
       - name: Push receipt-service-image
-        run: docker push khs23/receipt-service:latest
+        run: docker push khs23/receipt-service-image:latest
 
       # statis-service
       - name: Build statis-service-image
@@ -62,10 +62,10 @@ jobs:
       - name: Build history-service-image
         run: docker build -t khs23/history-service-image:latest ./back-end/history-service
       - name: Push history-service-image
-        run: docker push khs23/history-service:latest
+        run: docker push khs23/history-service-image:latest
 
       # front
-      - name: Build front
+      - name: Build front-image
         run: docker build -t khs23/front-image:latest ./front-end
       - name: Push front-image
         run: docker push khs23/front-image:latest
