@@ -1,0 +1,47 @@
+# --- Maven ---
+**/target/
+
+# --- Logs ---
+**/*.log
+spring.log
+
+# --- IntelliJ IDEA ---
+.idea/
+*.iml
+out/
+
+# --- OS Temp Files ---
+.DS_Store
+Thumbs.db
+
+# --- Environment Secrets ---
+.env
+*.env
+
+# --- Application 설정 파일 ---
+application-local.yml
+application-local.yaml
+application-dev.yml
+application-dev.yaml
+application-lan.yml
+application-lan.yaml
+
+# 기본 설정 파일은 Git에 포함되도록 허용
+!application.yml
+!application.yaml
+
+# --- Security keys (JWT, 인증서 등) ---
+*.keystore
+*.jks
+
+# --- Test Reports ---
+surefire-reports/
+test-output/
+
+# --- Mac/Linux metadata ---
+*.swp
+*.swo
+receipt-service/upload*/
+
+#config-server
+./config-server

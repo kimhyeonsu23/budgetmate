@@ -1,0 +1,184 @@
+services:
+  eureka-server:
+    image: khs23/eureka-server-image:latest
+    #build:
+      #context: ./eureka-server
+    ports:
+      - "8761:8761"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - budgetmate-compose
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  config-server:
+    image: khs23/config-server-image:latest
+    container_name: config-server-container
+    #build:
+      #context: ./config-server
+    ports:
+      - "8888:8888"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8888/actuator/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+    volumes:
+      - ./config-server-application.yml:/app/config/application.yml
+    networks:
+      - budgetmate-compose
+
+  gateway:
+    image: khs23/gateway-image:latest
+    container_name: gateway-container
+    #build:
+      #context: ./gateway
+    ports:
+      - "8090:8090"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8090/actuator/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+    networks:
+      - budgetmate-compose
+
+  user-service:
+    image: khs23/user-service-image:latest
+    container_name: user-service-container
+    #build:
+      #context: ./user-service
+    ports:
+      - "8081:8081"
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+    environment:
+      - SPRING_PROFILES_ACTIVE=user-docker
+    networks:
+      - budgetmate-compose
+
+  receipt-service:
+    image: khs23/receipt-service-image:latest
+    volumes:
+      - /home/ubuntu/upload/image:/upload/image
+    container_name: receipt-service-container
+    #build:
+      #context: ./receipt-service
+    ports:
+      - "8082:8082"
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+    environment:
+      - SPRING_PROFILES_ACTIVE=receipt-docker
+    networks:
+      - budgetmate-compose
+
+  statis-service:
+    image: khs23/statis-service-image:latest
+    container_name: statis-service-container
+    #build:
+      #context: ./statis-service
+    ports:
+      - "8083:8083"
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+    environment:
+      - SPRING_PROFILES_ACTIVE=statis-docker
+    networks:
+      - budgetmate-compose
+
+  history-service:
+    image: khs23/history-service-image:latest
+    container_name: history-service-container
+    #build:
+      #context: ./history-service
+    ports:
+      - "8084:8084"
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+    environment:
+      - SPRING_PROFILES_ACTIVE=history-docker
+    networks:
+      - budgetmate-compose
+
+  challenge-service:
+    image: khs23/challenge-service-image:latest
+    container_name: challenge-service-container
+    #build:
+    #context: ./user-service
+    ports:
+      - "8085:8085"
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+    environment:
+      - SPRING_PROFILES_ACTIVE=challenge-docker
+    networks:
+      - budgetmate-compose
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-container
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_DATABASE: budget_db
+      MYSQL_USER: budget_user
+      MYSQL_PASSWORD: 1234
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - budgetmate-compose
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  front-end:
+    image: khs23/front-end-image:latest
+    container_name: front-end
+    ports:
+      - "9090:80"
+    networks:
+      - budgetmate-compose
+
+networks:
+  budgetmate-compose:
+

@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: 'Pretendard', sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  background-color: #ffffff; /* 기존 #fffaf2 → 화이트 */
+  color: #111827;
+  font-family: 'Pretendard', sans-serif;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+
+/*  불필요한 패딩 제거 + 가운데 정렬 제거 */
+#root {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}

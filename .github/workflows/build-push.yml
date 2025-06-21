@@ -1,0 +1,72 @@
+# build-push.yml
+name: CI for Budgetmate
+
+on:
+  push:
+    branches: ["main"]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Login to DockerHub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+
+      # eureka-server
+      - name: Build eureka-server-image
+        run: docker build -t khs23/eureka-server-image:latest ./back-end/eureka-server
+      - name: Push eureka-server-image
+        run: docker push khs23/eureka-server-image:latest
+
+      # gateway
+      - name: Build gateway-image
+        run: docker build -t khs23/gateway-image:latest ./back-end/gateway
+      - name: Push gateway-image
+        run: docker push khs23/gateway-image:latest
+
+      # config-server
+      - name: Build config-server-image
+        run: docker build -t khs23/config-server:latest ./back-end/config-server
+      - name: Push config-server-image
+        run: docker push khs23/config-server:latest
+
+      # user-service
+      - name: Build user-service-image
+        run: docker build -t khs23/user-service-image:latest ./back-end/user-service
+      - name: Push user-service-image
+        run: docker push khs23/user-service-image:latest
+
+      # receipt-service
+      - name: Build receipt-service-image
+        run: docker build -t khs23/receipt-service-image:latest ./back-end/receipt-service
+      - name: Push receipt-service-image
+        run: docker push khs23/receipt-service:latest
+
+      # statis-service
+      - name: Build statis-service-image
+        run: docker build -t khs23/statis-service-image:latest ./back-end/statis-service
+      - name: Push statis-service-image
+        run: docker push khs23/statis-service-image:latest
+
+      # history-service
+      - name: Build history-service-image
+        run: docker build -t khs23/history-service-image:latest ./back-end/history-service
+      - name: Push history-service-image
+        run: docker push khs23/history-service:latest
+
+      # front
+      - name: Build front
+        run: docker build -t khs23/front-image:latest ./front-end
+      - name: Push front-image
+        run: docker push khs23/front-image:latest
+

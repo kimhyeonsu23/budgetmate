@@ -1,0 +1,27 @@
+server:
+  port: 8888
+spring:
+  application:
+    name: config-server
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/kimhyeonsu23/budgetmate_config-server.git
+          username: kimhyeonsu23
+          password:
+          default-label: main # 브랜치명
+          search-paths: dev, local, lan, docker
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-server-container:8761/eureka
+    register-with-eureka: true # register-with-eureka : 나 자신을 유레카에게 알>려줌 / 기본값이 true라서 없어도 ㄱㄴ
+    fetch-registry: true # fetch-registry : 다른 서비스들의 목록을 받아올 수 있>음. (서비스간 통신할때) / 기본값 : true
+  instance:
+    prefer-ip-address: true # 내 주소를 도메인 말고 ip로 알려줄때.
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

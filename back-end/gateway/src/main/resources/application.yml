@@ -1,0 +1,136 @@
+server:
+  port: 8090
+
+spring:
+  application:
+    name: api-gateway
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+
+  cloud:
+    gateway:
+      multipart:
+        enabled: true
+
+      routes:
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/user/**
+          filters:
+            - PreserveHostHeader
+
+        - id: budget-api
+          uri: lb://receipt-service
+          predicates:
+            - Path=/budget/**
+          filters:
+            - PreserveHostHeader
+
+        - id: receipt-service
+          uri: lb://receipt-service
+          predicates:
+            - Path=/receipt/**
+          filters:
+            - PreserveHostHeader
+
+        - id: image-upload-api
+          uri: lb://receipt-service
+          predicates:
+            - Path=/api/images/upload
+          filters:
+            - PreserveHostHeader
+
+        - id: image-static
+          uri: lb://receipt-service
+          predicates:
+            - Path=/image/upload/images/**
+          filters:
+            - PreserveHostHeader
+
+        - id: receipt-image-upload
+          uri: lb://receipt-service
+          predicates:
+            - Path=/receipt/image/upload
+          filters:
+            - PreserveHostHeader
+
+        - id: receipt-image-static
+          uri: lb://receipt-service
+          predicates:
+            - Path=/receipt/image/**
+          filters:
+            - PreserveHostHeader
+
+        - id: statis-service
+          uri: lb://statis-service
+          predicates:
+            - Path=/statis/**
+          filters:
+            - PreserveHostHeader
+
+        - id: history-service
+          uri: lb://history-service
+          predicates:
+            - Path=/history/**
+          filters:
+            - PreserveHostHeader
+
+        - id: challenge-service
+          uri: lb://challenge-service
+          predicates:
+              - Path=/challenge/**
+          filters:
+            - PreserveHostHeader
+
+      default-filters:
+      # JWT 를 쿠키로 주고받으므로 Cookie 헤더 제거 필터 비활성화
+      # - RemoveRequestHeader=Cookie
+
+      globalcors:
+        add-to-simple-url-handler-mapping: true
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins:
+              - http://localhost:5173
+              - http://172.20.10.5:5173  # ← 실제 모바일 IP 주소로 명시
+              - http://localhost:9090
+            allowedMethods: "*"
+            allowedHeaders: "*"
+            allowCredentials: true
+
+      httpclient:
+        max-initial-line-length: 50000   # (기존 그대로)
+
+codec:
+  max-in-memory-size: 10MB              # 응답 버퍼 제한
+
+discovery:
+  locator:
+    enabled: true
+    lower-case-service-id: true
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      #defaultZone: http://localhost:8761/eureka
+      defaultZone: http://eureka-server-container:8761/eureka
+  instance:
+    prefer-ip-address: true
+
+logging:
+  level:
+    org.springframework.cloud.gateway.filter: DEBUG
+    org.springframework.security: DEBUG
+    com.budgetmate.user.security: DEBUG
+    org.springframework.web: DEBUG
