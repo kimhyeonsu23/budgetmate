@@ -1,6 +1,7 @@
 services:
   eureka-server:
     image: khs23/eureka-server-image:latest
+    container_name: eureka-server-container
     #build:
       #context: ./eureka-server
     ports:
