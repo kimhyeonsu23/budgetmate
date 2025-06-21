@@ -64,6 +64,12 @@ jobs:
       - name: Push history-service-image
         run: docker push khs23/history-service-image:latest
 
+      # challenge-service
+      - name: Build challenge-service-image
+        run: docker build -t khs23/challenge-service-image:latest ./back-end/challenge-service
+      - name: Push challenge-service-image
+        run: docker push khs23/challenge-service-image:latest
+
       # front
       - name: Build front-image
         run: docker build -t khs23/front-image:latest ./front-end
