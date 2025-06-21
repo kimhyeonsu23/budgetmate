@@ -9,7 +9,7 @@ spring:
         git:
           uri: https://github.com/kimhyeonsu23/budgetmate_config-server.git
           username: kimhyeonsu23
-          password:
+          password: ${GIT_TOKEN}
           default-label: main # 브랜치명
           search-paths: dev, local, lan, docker
 eureka:
