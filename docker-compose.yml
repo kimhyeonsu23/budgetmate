@@ -173,7 +173,7 @@ services:
 
   front-end:
     image: khs23/front-end-image:latest
-    container_name: front-end
+    container_name: front-end-container
     ports:
       - "9090:80"
     networks:
