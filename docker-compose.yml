@@ -25,6 +25,8 @@ services:
       #context: ./config-server
     ports:
       - "8888:8888"
+    environment:
+      GIT_TOKEN: ${GIT_TOKEN}
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8888/actuator/health"]
       interval: 5s
