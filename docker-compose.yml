@@ -182,3 +182,5 @@ services:
 networks:
   budgetmate-compose:
 
+volumes:
+  mysql-data:

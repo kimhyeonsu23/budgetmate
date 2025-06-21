@@ -76,3 +76,13 @@ jobs:
       - name: Push front-image
         run: docker push khs23/front-image:latest
 
+      - name: Trigger Jenkins Job
+        run: |
+          curl -X POST "$JENKINS_URL/job/budgetmate-deploy/build" \
+          --user "$JENKINS_USER:$JENKINS_TOKEN"
+        env:
+          JENKINS_URL: ${{ secrets.JENKINS_URL }}
+          JENKINS_USER: ${{ secrets.JENKINS_USER }}
+          JENKINS_TOKEN: ${{ secrets.JENKINS_TOKEN }}
+
+
