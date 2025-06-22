@@ -4,7 +4,7 @@ spring:
     import: optional:configserver:http://config-server:8888
 
   profiles:
-    active: ${SPRING_PROFILES_ACTIVE:docker}  # 환경 변수나 기본값으로 local profile 사용
+    active: ${SPRING_PROFILES_ACTIVE:staits-docker}  # 환경 변수나 기본값으로 local profile 사용
 
 eureka:
   client:

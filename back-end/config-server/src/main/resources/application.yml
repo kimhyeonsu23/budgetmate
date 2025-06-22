@@ -15,7 +15,7 @@ spring:
 eureka:
   client:
     service-url:
-      defaultZone: http://eureka-server-container:8761/eureka
+      defaultZone: http://eureka-server:8761/eureka
     register-with-eureka: true # register-with-eureka : 나 자신을 유레카에게 알>려줌 / 기본값이 true라서 없어도 ㄱㄴ
     fetch-registry: true # fetch-registry : 다른 서비스들의 목록을 받아올 수 있>음. (서비스간 통신할때) / 기본값 : true
   instance:

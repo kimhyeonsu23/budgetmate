@@ -10,21 +10,24 @@ public class WebClientConfig {
     @Bean
     public WebClient statisWebClient() {
         return WebClient.builder()
-                .baseUrl("http://localhost:8080") // Gateway 주소
+                //.baseUrl("http://localhost:8080") // Gateway 주소
+                .baseUrl("http://gateway:8080") // Gateway 주소
                 .build();
     }
 
     @Bean
     public WebClient budgetWebClient() {
         return WebClient.builder()
-                .baseUrl("http://localhost:8080") // Gateway 주소
+                //.baseUrl("http://localhost:8080") // Gateway 주소
+                .baseUrl("http://gateway:8080") // Gateway 주소
                 .build();
     }
 
     @Bean
     public WebClient userWebClient() {
         return WebClient.builder()
-                .baseUrl("http://localhost:8080") // Gateway 주소
+                //.baseUrl("http://localhost:8080") // Gateway 주소
+                .baseUrl("http://gateway:8080") // Gateway 주소
                 .build();
     }
 

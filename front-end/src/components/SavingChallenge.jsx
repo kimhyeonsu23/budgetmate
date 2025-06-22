@@ -36,7 +36,7 @@ export default function SavingChallenge() {
 
   const fetchMonthlySpending = async () => {
     try {
-      const res = await axios.get(`http://localhost:8080/statis/getReceipt/calMonthlyTotal`, {
+      const res = await axios.get(`/statis/getReceipt/calMonthlyTotal`, {
         headers: { Authorization: `Bearer ${token}` }
       })
       setMonthlySpending(res.data || 0)
@@ -68,7 +68,7 @@ export default function SavingChallenge() {
 
   const handleSubmit = async () => {
     try {
-      await axios.post('http://localhost:8080/challenge/create', {
+      await axios.post('/challenge/create', {
         type: 'SAVING',
         startDate,
         endDate
