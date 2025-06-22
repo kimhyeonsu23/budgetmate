@@ -74,6 +74,8 @@ services:
         condition: service_healthy
       config-server:
         condition: service_healthy
+      gateway:
+        condition: service_healthy
     environment:
       - SPRING_PROFILES_ACTIVE=user-docker
     networks:
@@ -95,6 +97,8 @@ services:
         condition: service_healthy
       mysql:
         condition: service_healthy
+      gateway:
+        condition: service_healthy
     environment:
       - SPRING_PROFILES_ACTIVE=receipt-docker
     networks:
@@ -113,6 +117,8 @@ services:
       config-server:
         condition: service_healthy
       mysql:
+        condition: service_healthy
+      gateway:
         condition: service_healthy
     environment:
       - SPRING_PROFILES_ACTIVE=statis-docker
@@ -133,6 +139,8 @@ services:
         condition: service_healthy
       mysql:
         condition: service_healthy
+      gateway:
+        condition: service_healthy
     environment:
       - SPRING_PROFILES_ACTIVE=history-docker
     networks:
@@ -151,6 +159,8 @@ services:
       mysql:
         condition: service_healthy
       config-server:
+        condition: service_healthy
+      gateway:
         condition: service_healthy
     environment:
       - SPRING_PROFILES_ACTIVE=challenge-docker
@@ -183,6 +193,9 @@ services:
     container_name: front-container
     ports:
       - "9090:80"
+    depends_on:
+      gateway:
+        condition: service_healthy
     networks:
       - budgetmate-compose
 
