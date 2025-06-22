@@ -4,11 +4,6 @@ server:
 spring:
   application:
     name: gateway
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info
 
   servlet:
     multipart:
@@ -135,3 +130,9 @@ logging:
     org.springframework.security: DEBUG
     com.budgetmate.user.security: DEBUG
     org.springframework.web: DEBUG
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
