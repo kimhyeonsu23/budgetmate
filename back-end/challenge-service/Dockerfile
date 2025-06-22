@@ -5,12 +5,11 @@ COPY pom.xml .
 RUN mvn -B dependency:go-offline
 
 COPY . .
-RUN mvn package -DskipTests #app/target에 빌드됨
+RUN mvn package -DskipTests
 
-# app
 FROM amazoncorretto:21.0.3
 
-WORKDIR /app # 현재 작업중인 app으로 복사해옴.
+WORKDIR /app
 COPY --from=builder /usr/src/app/target/challenge-service-0.0.1-SNAPSHOT.jar /app/
 
 ENTRYPOINT ["java", "-jar", "/app/challenge-service-0.0.1-SNAPSHOT.jar"]
