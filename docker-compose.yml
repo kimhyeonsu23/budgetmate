@@ -192,6 +192,7 @@ services:
     image: khs23/front-image:latest
     container_name: front-container
     ports:
+      - "80:80"
       - "9090:80"
     depends_on:
       gateway:
