@@ -37,6 +37,13 @@ spring:
           filters:
             - PreserveHostHeader
 
+        - id: budget-test
+          uri: lb://receipt-service
+          predicates:
+            - Path=/budget
+          filters:
+            - PreserveHostHeader
+
         - id: image-upload-api
           uri: lb://receipt-service
           predicates:

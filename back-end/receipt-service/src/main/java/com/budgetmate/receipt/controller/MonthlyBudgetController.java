@@ -18,7 +18,7 @@ public class MonthlyBudgetController {
     private final MonthlyBudgetRepository repository;
     private final BudgetAlertService budgetAlertService;
 
-    @GetMapping
+    @GetMapping({"", "/"})
     public ResponseEntity<MonthlyBudgetEntity> getBudget(
             @RequestParam Long userId,
             @RequestParam int year,
