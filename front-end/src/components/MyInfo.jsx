@@ -20,7 +20,7 @@ export default function MyInfo() {
   const fetchBadges = async () => {
     try {
       const token = localStorage.getItem('accessToken');
-      const res = await fetch('http://localhost:8080/history/getGrantedDate', {
+      const res = await fetch('/history/getGrantedDate', {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -41,7 +41,7 @@ export default function MyInfo() {
   const fetchMyChallenges = async () => {
     try {
       const token = localStorage.getItem('accessToken');
-      const res = await fetch('http://localhost:8080/challenge/my', {
+      const res = await fetch('/challenge/my', {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',

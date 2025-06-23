@@ -1,7 +1,7 @@
 const BASE_URL = window.location.origin;
 
 export const REDIRECT_URI = `${BASE_URL}/oauth/kakao/callback`;
-export const API_BASE_URL   = 'http://localhost:8080';
+export const API_BASE_URL   = 'http://gateway:8090';
 
 export const KAKAO_CLIENT_ID = import.meta.env.VITE_KAKAO_CLIENT_ID;
 export const KAKAO_AUTH_URL = 

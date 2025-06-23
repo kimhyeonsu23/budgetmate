@@ -24,7 +24,7 @@ export default function SavingChallenge() {
     const month = now.getMonth() + 1
 
     try {
-      const res = await axios.get(`http://localhost:8080/budget`, {
+      const res = await axios.get(`/budget`, {
         params: { userId, year, month },
         headers: { Authorization: `Bearer ${token}` }
       })
@@ -55,7 +55,7 @@ export default function SavingChallenge() {
     }
 
     try {
-      await axios.post('http://localhost:8080/budget', body, {
+      await axios.post('/budget', body, {
         headers: { Authorization: `Bearer ${token}` }
       })
       alert('예산이 저장되었습니다.')
