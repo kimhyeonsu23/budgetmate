@@ -26,6 +26,7 @@ spring:
         - id: budget-api
           uri: lb://receipt-service
           predicates:
+            - Path=/budget
             - Path=/budget/**
           filters:
             - PreserveHostHeader
