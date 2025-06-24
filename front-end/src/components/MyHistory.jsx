@@ -22,7 +22,7 @@ export default function MyHistory() {
     5: '건강', 6: '교육', 7: '저축/투자', 8: '수입'
   }
 
-  const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff8042', '#a4de6c', '#d0ed57', '#8dd1e1']
+  const COLORS = ['#a5b4fc', '#c4b5fd', '#fbcfe8', '#fcd34d', '#6ee7b7', '#fdba74', '#fda4af']
 
   useEffect(() => {
     fetchAllData(selectedYear, selectedMonth)
@@ -60,25 +60,34 @@ export default function MyHistory() {
   }
 
   return (
-    <div className="min-h-screen bg-white p-6">
+    <main className="min-h-screen bg-white p-5">
       <div className="max-w-3xl mx-auto space-y-6">
-        <h1 className="text-2xl font-bold text-center"> 내 소비 내역</h1>
+        {/* 요기 */}
+        <div className="flex justify-between items-center">
+          <h1 className="text-2xl font-bold text-gray-800">내 소비 내역</h1>
+          <button
+            onClick={() => navigate(-1)}
+            className="text-sm bg-gray-200 text-gray-700 px-3 py-1 rounded-full hover:bg-gray-300"
+          >
+            ← 돌아가기
+          </button>
+        </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {/* 월/연도 선택 */}
+        <div className="flex gap-4 justify-center">
           <select
             value={selectedYear}
             onChange={(e) => setSelectedYear(Number(e.target.value))}
-            className="border rounded px-3 py-2"
+            className="border border-gray-300 rounded-md px-4 py-2"
           >
             {[2023, 2024, 2025].map((y) => (
               <option key={y} value={y}>{y}년</option>
             ))}
           </select>
-
           <select
             value={selectedMonth}
             onChange={(e) => setSelectedMonth(Number(e.target.value))}
-            className="border rounded px-3 py-2"
+            className="border border-gray-300 rounded-md px-4 py-2"
           >
             {[...Array(12)].map((_, i) => (
               <option key={i + 1} value={i + 1}>{i + 1}월</option>
@@ -86,82 +95,78 @@ export default function MyHistory() {
           </select>
         </div>
 
-        {loading ? (
-          <div className="flex justify-center items-center h-48">
-            <span className="text-gray-500">로딩 중...</span>
-          </div>
-        ) : (
-          <>
-            <div className="bg-gray-100 p-4 rounded-lg shadow">
-              <p className="font-semibold">총 지출: ₩{totalSpending.toLocaleString()}</p>
-              {budget !== null ? (
-                <>
-                  <p>예산: ₩{budget.toLocaleString()}</p>
-                  <p className={totalSpending > budget ? 'text-red-500' : 'text-green-600'}>
-                    {totalSpending > budget ? '⚠️ 예산 초과!' : '예산 내 지출 중입니다.'}
-                  </p>
-                  <div className="w-full bg-gray-300 rounded h-3 mt-2">
-                    <div
-                      className="bg-blue-500 h-3 rounded"
-                      style={{ width: `${Math.min((totalSpending / budget) * 100, 100)}%` }}
-                    ></div>
-                  </div>
-                </>
-              ) : (
-                <p className="text-gray-500">⚠️ 예산이 설정되어 있지 않습니다.</p>
-              )}
-            </div>
-
-            <div className="bg-white p-4 rounded-lg shadow">
-              <h2 className="text-lg font-semibold mb-4">📊 카테고리별 소비</h2>
-              <div className="w-full h-64">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={Object.entries(categoryStats).map(([name, amount]) => ({
-                        categoryName: name,
-                        totalAmount: amount,
-                      }))}
-                      dataKey="totalAmount"
-                      nameKey="categoryName"
-                      outerRadius={100}
-                      label
-                    >
-                      {Object.entries(categoryStats).map(([_, __], index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                    <Legend />
-                  </PieChart>
-                </ResponsiveContainer>
+        {/* 예산 요약 */}
+        <div className="bg-gray-100 rounded-xl shadow-md p-5 space-y-2">
+          <p className="font-semibold text-gray-800">총 지출: ₩{totalSpending.toLocaleString()}</p>
+          {budget !== null ? (
+            <>
+              <p className="text-gray-700">예산: ₩{budget.toLocaleString()}</p>
+              <p className={totalSpending > budget ? 'text-red-500' : 'text-green-600'}>
+                {totalSpending > budget ? '⚠️ 예산 초과!' : '예산 내 지출 중입니다.'}
+              </p>
+              <div className="w-full bg-gray-300 rounded h-2 mt-2">
+                <div
+                  className="bg-indigo-400 h-2 rounded"
+                  style={{ width: `${Math.min((totalSpending / budget) * 100, 100)}%` }}
+                />
               </div>
-            </div>
+            </>
+          ) : (
+            <p className="text-gray-500">⚠️ 예산이 설정되어 있지 않습니다.</p>
+          )}
+        </div>
 
-            <div className="bg-white p-4 rounded-lg shadow">
-              <h2 className="text-lg font-semibold mb-2">🧾 최근 소비 내역</h2>
-              {entries.length === 0 ? (
-                <p className="text-gray-500">최근 소비 내역이 없습니다.</p>
-              ) : (
-                <ul className="divide-y">
-                  {entries.map((entry) => (
-                    <li
-                      key={entry.receiptId}
-                      className="py-2 cursor-pointer hover:bg-gray-100 px-2 rounded"
-                      onClick={() => navigate(`/ledger/${entry.date}`)}
-                    >
-                      <div className="flex justify-between">
-                        <div>{entry.date} - {entry.shop || '상호명 없음'}</div>
-                        <div>{keywordMap[entry.keywordId]} | ₩{entry.totalPrice?.toLocaleString() || 0}</div>
-                      </div>
-                    </li>
+        {/* 카테고리별 소비 */}
+        <div className="bg-white p-4 rounded-xl shadow">
+          <h2 className="text-lg font-semibold text-gray-800 mb-3">📊 카테고리별 소비</h2>
+          <div className="w-full h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={Object.entries(categoryStats).map(([name, amount]) => ({
+                    categoryName: name,
+                    totalAmount: amount,
+                  }))}
+                  dataKey="totalAmount"
+                  nameKey="categoryName"
+                  outerRadius={100}
+                >
+                  {Object.entries(categoryStats).map(([_, __], index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
-                </ul>
-              )}
-            </div>
-          </>
-        )}
+                </Pie>
+                <Tooltip />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* 소비 내역 */}
+        <div className="bg-white p-4 rounded-xl shadow">
+          <h2 className="text-lg font-semibold text-gray-800 mb-2">🧾 최근 소비 내역</h2>
+          {entries.length === 0 ? (
+            <p className="text-gray-500">최근 소비 내역이 없습니다.</p>
+          ) : (
+            <ul className="divide-y divide-gray-200">
+              {entries.map((entry) => (
+                <li
+                  key={entry.receiptId}
+                  className="py-3 px-2 cursor-pointer hover:bg-gray-50 transition rounded-md"
+                  onClick={() => navigate(`/ledger/${entry.date}`)}
+                >
+                  <div className="flex justify-between text-sm text-gray-700">
+                    <div>{entry.date} - {entry.shop || '상호명 없음'}</div>
+                    <div className="font-medium">
+                      {keywordMap[entry.keywordId]} | ₩{entry.totalPrice?.toLocaleString() || 0}
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
       </div>
-    </div>
+    </main>
   )
 }

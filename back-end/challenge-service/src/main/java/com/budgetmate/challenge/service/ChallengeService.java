@@ -1,5 +1,6 @@
 package com.budgetmate.challenge.service;
 
+import com.budgetmate.challenge.client.BudgetClient;
 import com.budgetmate.challenge.dto.ChallengeRequestDto;
 import com.budgetmate.challenge.dto.ChallengeResponseDto;
 import com.budgetmate.challenge.entity.ChallengeEntity;
@@ -18,15 +19,35 @@ import java.util.stream.Collectors;
 public class ChallengeService {
 
     private final ChallengeRepository challengeRepository;
+    private final BudgetClient budgetClient;
 
     // 챌린지 등록
     @Transactional
     public ChallengeResponseDto createChallenge(Long userId, ChallengeRequestDto request) {
+        Integer targetAmount = request.getTargetAmount();
+
+        if (request.getType() == ChallengeType.SAVING) {
+            LocalDate start = request.getStartDate();
+            LocalDate end = request.getEndDate();
+            LocalDate firstDay = start.withDayOfMonth(1);
+            LocalDate lastDay = start.withDayOfMonth(start.lengthOfMonth());
+
+            // 한 달 전체 기간인지 체크
+            if (!start.equals(firstDay) || !end.equals(lastDay)) {
+                throw new IllegalArgumentException("절약 챌린지는 반드시 해당 월의 1일부터 말일까지 설정해야 합니다.");
+            }
+
+            int year = start.getYear();
+            int month = start.getMonthValue();
+            int monthlyBudget = budgetClient.getMonthlyBudget(userId, year, month);
+            targetAmount = (int) Math.round(monthlyBudget * 0.1); // 예산의 10%
+        }
+
         ChallengeEntity challenge = ChallengeEntity.builder()
                 .userId(userId)
                 .type(request.getType())
                 .targetCategory(request.getTargetCategory())
-                .targetAmount(request.getTargetAmount())
+                .targetAmount(targetAmount)
                 .startDate(request.getStartDate())
                 .endDate(request.getEndDate())
                 .success(false)
@@ -35,7 +56,6 @@ public class ChallengeService {
                 .build();
 
         ChallengeEntity saved = challengeRepository.save(challenge);
-
         return toResponseDto(saved);
     }
 
@@ -51,13 +71,6 @@ public class ChallengeService {
         return challengeRepository.findByEndDateBeforeAndEvaluatedFalse(LocalDate.now());
     }
 
-    // 평가 후 상태 업데이트
-    @Transactional
-    public void evaluateChallenge(ChallengeEntity challenge, boolean isSuccess) {
-        challenge.setSuccess(isSuccess);
-        challenge.setEvaluated(true);
-        challengeRepository.save(challenge);
-    }
 
     // 삭제 처리 (Soft delete)
     @Transactional
@@ -77,6 +90,7 @@ public class ChallengeService {
                 .startDate(entity.getStartDate())
                 .endDate(entity.getEndDate())
                 .success(entity.isSuccess())
+                .evaluated(entity.isEvaluated())
                 .build();
     }
 }

@@ -34,15 +34,15 @@ export default function DailyLedger() {
   })
 
   const categoryColors = {
-    '외식': 'bg-pink-100 text-pink-800',
-    '교통': 'bg-blue-100 text-blue-800',
-    '생활비': 'bg-yellow-100 text-yellow-800',
-    '쇼핑': 'bg-purple-100 text-purple-800',
-    '건강': 'bg-green-100 text-green-800',
-    '교육': 'bg-indigo-100 text-indigo-800',
-    '저축/투자': 'bg-gray-100 text-gray-800',
-    '수입': 'bg-emerald-100 text-emerald-800',
-    '기타': 'bg-slate-100 text-slate-800'
+    '외식': 'bg-[#fce4ec] text-pink-800',
+    '교통': 'bg-[#e3f2fd] text-blue-800',
+    '생활비': 'bg-[#fff9c4] text-yellow-800',
+    '쇼핑': 'bg-[#f3e5f5] text-purple-800',
+    '건강': 'bg-[#e8f5e9] text-green-800',
+    '교육': 'bg-[#e8eaf6] text-indigo-800',
+    '저축/투자': 'bg-[#f5f5f5] text-gray-800',
+    '수입': 'bg-[#e0f2f1] text-emerald-800',
+    '기타': 'bg-[#eceff1] text-slate-800'
   }
 
   const categoryIcons = {
@@ -144,112 +144,86 @@ export default function DailyLedger() {
   }
 
   const downloadCSV = () => {
-  const rows = [['카테고리', '상호', '금액', '날짜']];
-
-  entries.forEach(e => {
-    const safeDate = `="${e.date}"`;
-
-    //  수입/지출 항목 한 줄
-    rows.push([e.category, e.description, e.amount, safeDate]);
-
-    //  상품정보가 있으면 바로 아래에 출력
-    if (itemsMap[e.id] && itemsMap[e.id].length > 0) {
-      rows.push(['', '상품명', '단가', '수량', '총액']);
-      itemsMap[e.id].forEach(item => {
-        rows.push([
-          '',
-          item.itemName,
-          item.unitPrice,
-          item.quantity,
-          item.totalPrice
-        ]);
-      });
-    }
-
-    //  항목 구분을 위한 빈 줄
-    rows.push([]);
-  });
-
-
-  const csvContent = "\uFEFF" + rows.map(r => r.join(',')).join('\n');
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `${date}_가계부.csv`;
-  a.click();
-  URL.revokeObjectURL(url);
-};
-
+    const rows = [['카테고리', '상호', '금액', '날짜']];
+    entries.forEach(e => {
+      const safeDate = `="${e.date}"`;
+      rows.push([e.category, e.description, e.amount, safeDate]);
+      if (itemsMap[e.id] && itemsMap[e.id].length > 0) {
+        rows.push(['', '상품명', '단가', '수량', '총액']);
+        itemsMap[e.id].forEach(item => {
+          rows.push(['', item.itemName, item.unitPrice, item.quantity, item.totalPrice]);
+        });
+      }
+      rows.push([]);
+    });
+    const csvContent = "\uFEFF" + rows.map(r => r.join(',')).join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${date}_가계부.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
 
   const expenseTotal = entries.filter(e => !e.isIncome).reduce((sum, e) => sum + Math.abs(e.amount), 0)
 
   const downloadPDF = () => {
-  const doc = new jsPDF()
-
-  doc.addFileToVFS('NotoSansKR.ttf', NotoSansKR)
-  doc.addFont('NotoSansKR.ttf', 'NotoSansKR', 'normal')
-  doc.setFont('NotoSansKR')
-  doc.setFontSize(18)
-  doc.text(`${formattedDate} 가계부`, 14, 22)
-
-  const tableBody = []
-
-  tableBody.push(['카테고리', '상세 내용', '금액', '단가', '수량', '합계'])
-
-  entries.forEach(entry => {
-    tableBody.push([
-      entry.category,
-      entry.description,
-      (entry.isIncome ? '+' : '-') + Math.abs(entry.amount).toLocaleString(),
-      '', '', ''
-    ])
-
-    if (itemsMap[entry.id]?.length > 0) {
-      tableBody.push(['', '상품명', '', '단가', '수량', '합계'])
-      itemsMap[entry.id].forEach(item => {
-        tableBody.push([
-          '', item.itemName,
-          '', `${item.unitPrice?.toLocaleString() || ''}`,
-          `${item.quantity}`, `${item.totalPrice.toLocaleString()}`
-        ])
-      })
-    }
-  })
-
-  autoTable(doc, {
-    body: tableBody,
-    startY: 30,
-    showHead: 'never', 
-    styles: {
-      font: 'NotoSansKR',
-      fontSize: 10
-    },
-    bodyStyles: {
-      font: 'NotoSansKR'
-    }
-  })
-
-  doc.setFontSize(12)
-  doc.text(`총 지출: ${expenseTotal.toLocaleString()}`, 14, doc.lastAutoTable.finalY + 10)
-  doc.save(`${date}_가계부.pdf`)
-}
-
+    const doc = new jsPDF()
+    doc.addFileToVFS('NotoSansKR.ttf', NotoSansKR)
+    doc.addFont('NotoSansKR.ttf', 'NotoSansKR', 'normal')
+    doc.setFont('NotoSansKR')
+    doc.setFontSize(18)
+    doc.text(`${formattedDate} 가계부`, 14, 22)
+    const tableBody = [['카테고리', '상세 내용', '금액', '단가', '수량', '합계']]
+    entries.forEach(entry => {
+      tableBody.push([
+        entry.category,
+        entry.description,
+        (entry.isIncome ? '+' : '-') + Math.abs(entry.amount).toLocaleString(),
+        '', '', ''
+      ])
+      if (itemsMap[entry.id]?.length > 0) {
+        tableBody.push(['', '상품명', '', '단가', '수량', '합계'])
+        itemsMap[entry.id].forEach(item => {
+          tableBody.push([
+            '', item.itemName,
+            '', `${item.unitPrice?.toLocaleString() || ''}`,
+            `${item.quantity}`, `${item.totalPrice.toLocaleString()}`
+          ])
+        })
+      }
+    })
+    autoTable(doc, {
+      body: tableBody,
+      startY: 30,
+      showHead: 'never',
+      styles: { font: 'NotoSansKR', fontSize: 10 },
+      bodyStyles: { font: 'NotoSansKR' }
+    })
+    doc.setFontSize(12)
+    doc.text(`총 지출: ${expenseTotal.toLocaleString()}`, 14, doc.lastAutoTable.finalY + 10)
+    doc.save(`${date}_가계부.pdf`)
+  }
 
   return (
-    <div className="min-h-screen bg-[#fffdf7] p-6">
+    <div className="min-h-screen bg-[#f8fafc] p-6">
       <div className="max-w-2xl mx-auto space-y-6">
         <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-extrabold text-[#444]">📒 {formattedDate} 가계부</h2>
+          <h2 className="text-2xl font-extrabold text-[#333]"> {formattedDate} 가계부</h2>
           <div className="flex gap-2">
             <button
-              onClick={() => navigate('/ledger')}
-              className="text-sm bg-gray-100 text-gray-700 px-3 py-1 rounded shadow hover:bg-gray-200"
-            >
-              ← 돌아가기
-            </button>
-            <button onClick={downloadPDF} className="text-sm bg-blue-100 text-blue-700 px-3 py-1 rounded shadow">PDF 저장</button>
-            <button onClick={downloadCSV} className="text-sm bg-green-100 text-green-700 px-3 py-1 rounded shadow">CSV 저장</button>
+              onClick={() => navigate(-1)}
+              className="text-sm bg-gray-200 text-gray-700 px-3 py-1 rounded-full hover:bg-gray-300"
+            >← 돌아가기</button>
+            <button
+              onClick={downloadPDF}
+              className="text-sm bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full hover:bg-indigo-200"
+            >PDF 저장</button>
+            <button
+              onClick={downloadCSV}
+              className="text-sm bg-green-100 text-green-700 px-3 py-1 rounded-full hover:bg-green-200"
+            >CSV 저장</button>
           </div>
         </div>
 
@@ -264,11 +238,9 @@ export default function DailyLedger() {
               >
                 <div className="flex justify-between items-center text-sm text-gray-800">
                   <div>
-                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium inline-flex items-center ${
-                      categoryColors[e.category] || 'bg-gray-100 text-gray-700'
-                    }`}>
+                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium inline-flex items-center ${categoryColors[e.category] || 'bg-gray-100 text-gray-700'}`}>
                       {categoryIcons[e.category]}{e.category}
-                    </span>{' '}
+                    </span>
                     <span className="font-medium ml-2">{e.description}</span>
                   </div>
                   <div className="flex items-center gap-2">

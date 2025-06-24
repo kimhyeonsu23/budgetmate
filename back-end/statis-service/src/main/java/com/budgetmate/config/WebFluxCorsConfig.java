@@ -1,4 +1,4 @@
-//package com.budgetmate
+package com.budgetmate.config;//package com.budgetmate
 //
 //import org.springframework.context.annotation.Bean;
 //import org.springframework.context.annotation.Configuration;

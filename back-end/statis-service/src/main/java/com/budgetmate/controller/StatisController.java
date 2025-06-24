@@ -4,9 +4,11 @@ import com.budgetmate.dto.CategoryRecommendationDto;
 import com.budgetmate.dto.MonthlyStatsDto;
 import com.budgetmate.security.TokenParser;
 import com.budgetmate.service.StatisService;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.Map;
 
 @RestController
@@ -67,4 +69,41 @@ public class StatisController {
 		Long userId = tokenParser.getUserIdFromToken(authHeader.replace("Bearer ", "").trim());
 		return ResponseEntity.ok(statisService.getMonthlyStats(userId, year, month));
 	}
+	//  userId 기반: 이번 달 총 소비 금액
+	@GetMapping("/spending/monthly-total")
+	public ResponseEntity<Integer> getMonthlyTotalByUserId(
+			@RequestParam Long userId,
+			@RequestParam int year,
+			@RequestParam int month) {
+		return ResponseEntity.ok(statisService.getMonthlyTotal(userId, year, month));
+	}
+
+	//  userId 기반: 특정 기간 총 소비액
+	@GetMapping("/spending/total")
+	public ResponseEntity<Integer> getTotalSpentByUserId(
+			@RequestParam Long userId,
+			@RequestParam("start") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start,
+			@RequestParam("end") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end) {
+		return ResponseEntity.ok(statisService.getTotalSpentInPeriod(userId, start, end));
+	}
+
+	//  userId 기반: 특정 기간 카테고리 소비액
+	@GetMapping("/spending/category")
+	public ResponseEntity<Map<String, Integer>> getCategorySpentByUserId(
+			@RequestParam Long userId,
+			@RequestParam("start") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start,
+			@RequestParam("end") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end) {
+		return ResponseEntity.ok(statisService.getCategoryStatsInPeriod(userId, start, end));
+	}
+
+	// userId 기반: 특정 기간 + 카테고리 소비액
+	@GetMapping("/spending/category-between")
+	public ResponseEntity<Integer> getCategorySpentByUserIdAndCategory(
+			@RequestParam Long userId,
+			@RequestParam("start") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start,
+			@RequestParam("end") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end,
+			@RequestParam String category) {
+		return ResponseEntity.ok(statisService.getCategorySpentInPeriod(userId, start, end, category));
+	}
+
 }

@@ -1,13 +1,12 @@
 package com.budgetmate.security;
 
-import java.nio.charset.StandardCharsets;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import java.nio.charset.StandardCharsets;
 
 
 @Component	// spring의 빈으로 등록되도록 함.

@@ -1,11 +1,12 @@
 package com.budgetmate.service;
 
-import java.util.Map;
-
 import com.budgetmate.dto.CategoryRecommendationDto;
 import com.budgetmate.dto.MonthlyStatsDto;
 import com.budgetmate.query.StatisQuery;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.util.Map;
 
 @Service
 public class StatisService {
@@ -71,4 +72,27 @@ public class StatisService {
 
 		return new MonthlyStatsDto(totalSpending, categoryStats, budget);
 	}
+	//  userId 기반: 이번 달 총 소비 금액
+	public int getMonthlyTotal(Long userId, int year, int month) {
+		System.out.println("StatisService - getMonthlyTotal 실행 / userId: " + userId + " / " + year + "-" + month);
+		return statisQuery.getMonthlyTotal(userId, year, month);
+	}
+
+	// userId 기반: 특정 기간 총 소비액
+	public int getTotalSpentInPeriod(Long userId, LocalDate start, LocalDate end) {
+		System.out.println("StatisService - getTotalSpentInPeriod 실행 / userId: " + userId + ", 기간: " + start + " ~ " + end);
+		return statisQuery.getTotalSpentInPeriod(userId, start, end);
+	}
+
+	//  userId 기반: 특정 기간 카테고리 소비액
+	public Map<String, Integer> getCategoryStatsInPeriod(Long userId, LocalDate start, LocalDate end) {
+		System.out.println("StatisService - getCategoryStatsInPeriod 실행 / userId: " + userId + ", 기간: " + start + " ~ " + end);
+		return statisQuery.getCategorySpentInPeriod(userId, start, end);
+	}
+
+	public int getCategorySpentInPeriod(Long userId, LocalDate start, LocalDate end, String category) {
+		return statisQuery.getCategorySpentInPeriod(userId, start, end, category);
+	}
+
+
 }

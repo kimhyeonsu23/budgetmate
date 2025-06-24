@@ -29,3 +29,39 @@ html, body, #root {
   padding: 0;
   box-sizing: border-box;
 }
+
+.react-calendar {
+  width: 100%;
+  max-width: 400px;
+  font-size: 0.875rem;
+}
+
+.react-calendar__tile {
+  padding: 0.5rem 0.25rem;
+  text-align: center;
+}
+
+.react-calendar__tile--now {
+  background: #fef3c7 !important;
+  border-radius: 9999px;
+}
+
+.react-calendar__tile--active {
+  background-color: #a5b4fc !important;
+  color: white !important;
+  border-radius: 9999px;
+}
+
+.react-calendar__tile:hover {
+  background-color: #e0e7ff;
+  border-radius: 9999px;
+  transition: all 0.2s ease;
+}
+
+.react-calendar__month-view__weekdays {
+  font-weight: 600;
+  text-align: center;
+  text-transform: none;
+  color: #6b7280;
+  font-size: 0.75rem;
+}

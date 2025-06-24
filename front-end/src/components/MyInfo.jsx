@@ -1,6 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
-import { Button, Divider, Typography, Paper, Box, Grid } from '@mui/material';
+import {
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  CartesianGrid
+} from 'recharts';
 import { useNavigate } from 'react-router-dom';
 
 export default function MyInfo() {
@@ -71,7 +78,6 @@ export default function MyInfo() {
       result[type].total++;
       if (c.success) result[type].success++;
     });
-
     const formatted = Object.entries(result).map(([type, { total, success }]) => ({
       type,
       successRate: Math.round((success / total) * 100),
@@ -81,129 +87,161 @@ export default function MyInfo() {
   };
 
   const getStatusText = (c) => {
-    if (new Date(c.endDate) >= new Date()) return '⏳ 진행 중';
+    const today = new Date();
+    const end = new Date(c.endDate);
+    if (!c.evaluated) {
+      return end >= today ? '⏳ 진행 중' : '🕓 평가 대기 중';
+    }
     return c.success ? '✅ 성공' : '❌ 실패';
   };
 
-  const ongoing = challenges.filter(c => new Date(c.endDate) >= new Date());
-  const completed = challenges.filter(c => new Date(c.endDate) < new Date());
+  const today = new Date();
+  const ongoing = challenges.filter(c => !c.evaluated && new Date(c.endDate) >= today);
+  const pendingEval = challenges.filter(c => !c.evaluated && new Date(c.endDate) < today);
+  const completed = challenges.filter(c => c.evaluated);
 
   return (
-    <Box className="bg-white px-6 py-10 max-w-6xl mx-auto space-y-16">
-      <Box textAlign="center">
-        <Typography variant="h4" fontWeight={600}>내 정보</Typography>
-        <Typography variant="subtitle1" color="text.secondary" mt={1}>👤 사용자 이름: {userName}</Typography>
-      </Box>
+    <main className="min-h-screen bg-white px-5 py-10 space-y-12 max-w-5xl mx-auto">
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-bold text-gray-800">내 정보</h1>
+        <button
+          onClick={() => navigate(-1)}
+          className="text-sm bg-gray-200 text-gray-700 px-3 py-1 rounded-full hover:bg-gray-300"
+        >
+          ← 돌아가기
+        </button>
+      </div>
 
       <section>
-        <Typography variant="h5" color="primary" textAlign="center" gutterBottom>🎖️ 내 뱃지</Typography>
-        <Grid container spacing={4} justifyContent="center">
+        <h2 className="text-lg font-semibold text-gray-800 mb-3 text-center">🎖️ 내 뱃지</h2>
+        <div className="flex justify-center gap-6">
           {badge1 && (
-            <Grid item>
-              <Paper elevation={3} className="p-4 text-center">
-                <img src="/badge1.png" alt="절약초보" className="w-24 mx-auto" />
-                <Typography variant="body2" mt={1}>초보 ({badge1})</Typography>
-              </Paper>
-            </Grid>
+            <div className="text-center">
+              <img src="/badge1.png" alt="절약초보" className="w-20 mx-auto" />
+              <p className="text-sm mt-1">초보 ({badge1})</p>
+            </div>
           )}
           {badge2 && (
-            <Grid item>
-              <Paper elevation={3} className="p-4 text-center">
-                <img src="/badge2.png" alt="절약고수" className="w-24 mx-auto" />
-                <Typography variant="body2" mt={1}>고수 ({badge2})</Typography>
-              </Paper>
-            </Grid>
+            <div className="text-center">
+              <img src="/badge2.png" alt="절약고수" className="w-20 mx-auto" />
+              <p className="text-sm mt-1">고수 ({badge2})</p>
+            </div>
           )}
           {badge3 && (
-            <Grid item>
-              <Paper elevation={3} className="p-4 text-center">
-                <img src="/badge3.png" alt="절약왕" className="w-24 mx-auto" />
-                <Typography variant="body2" mt={1}>왕 ({badge3})</Typography>
-              </Paper>
-            </Grid>
+            <div className="text-center">
+              <img src="/badge3.png" alt="절약왕" className="w-20 mx-auto" />
+              <p className="text-sm mt-1">왕 ({badge3})</p>
+            </div>
           )}
-        </Grid>
+        </div>
       </section>
 
       <section>
-        <Typography variant="h5" color="primary" textAlign="center" gutterBottom>🔥 진행 중인 챌린지</Typography>
+        <h2 className="text-lg font-semibold text-gray-800 mb-3 text-center">🔥 진행 중인 챌린지</h2>
         {ongoing.length === 0 ? (
-          <Typography align="center" color="text.secondary">진행 중인 챌린지가 없습니다.</Typography>
+          <p className="text-center text-gray-500">진행 중인 챌린지가 없습니다.</p>
         ) : (
-          <Grid container spacing={2}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {ongoing.map((c) => (
-              <Grid item xs={12} md={6} key={c.id}>
-                <Paper className="p-4 shadow rounded-lg">
-                  <Typography fontWeight={500}>유형: {typeLabel[c.type]}</Typography>
-                  {c.targetCategory && <Typography>카테고리: {c.targetCategory}</Typography>}
-                  {c.targetAmount != null && <Typography>목표 금액: {c.targetAmount.toLocaleString()}원</Typography>}
-                  <Typography>기간: {c.startDate} ~ {c.endDate}</Typography>
-                  <Typography className="text-orange-600 font-medium">{getStatusText(c)}</Typography>
-                </Paper>
-              </Grid>
+              <div
+                key={c.id}
+                className="p-4 shadow rounded-xl cursor-pointer hover:shadow-md border"
+                onClick={() => navigate(`/challenges/detail/${c.id}`)}
+              >
+                <p className="font-semibold">유형: {typeLabel[c.type]}</p>
+                {c.targetCategory && <p>카테고리: {c.targetCategory}</p>}
+                {c.targetAmount != null && <p>목표 금액: ₩{c.targetAmount.toLocaleString()}</p>}
+                <p>기간: {c.startDate} ~ {c.endDate}</p>
+                <p className="text-orange-600 font-medium">{getStatusText(c)}</p>
+              </div>
             ))}
-          </Grid>
+          </div>
         )}
       </section>
 
       <section>
-        <Typography variant="h5" color="primary" textAlign="center" gutterBottom>📦 완료된 챌린지</Typography>
+        <h2 className="text-lg font-semibold text-gray-800 mb-3 text-center">📦 완료된 챌린지</h2>
         {completed.length === 0 ? (
-          <Typography align="center" color="text.secondary">완료된 챌린지가 없습니다.</Typography>
+          <p className="text-center text-gray-500">완료된 챌린지가 없습니다.</p>
         ) : (
-          <Grid container spacing={2}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {completed.map((c) => (
-              <Grid item xs={12} md={6} key={c.id}>
-                <Paper className="p-4 shadow rounded-lg">
-                  <Typography fontWeight={500}>유형: {typeLabel[c.type]}</Typography>
-                  {c.targetCategory && <Typography>카테고리: {c.targetCategory}</Typography>}
-                  {c.targetAmount != null && <Typography>목표 금액: {c.targetAmount.toLocaleString()}원</Typography>}
-                  <Typography>기간: {c.startDate} ~ {c.endDate}</Typography>
-                  <Typography className={c.success ? 'text-green-600 font-medium' : 'text-red-500 font-medium'}>{getStatusText(c)}</Typography>
-                </Paper>
-              </Grid>
+              <div
+                key={c.id}
+                className="p-4 shadow rounded-xl cursor-pointer hover:shadow-md border"
+                onClick={() => navigate(`/challenges/detail/${c.id}`)}
+              >
+                <p className="font-semibold">유형: {typeLabel[c.type]}</p>
+                {c.targetCategory && <p>카테고리: {c.targetCategory}</p>}
+                {c.targetAmount != null && <p>목표 금액: ₩{c.targetAmount.toLocaleString()}</p>}
+                <p>기간: {c.startDate} ~ {c.endDate}</p>
+                <p className={c.success ? 'text-green-600 font-medium' : 'text-red-500 font-medium'}>{getStatusText(c)}</p>
+              </div>
             ))}
-          </Grid>
+          </div>
         )}
       </section>
 
       <section>
-        <Typography variant="h5" color="primary" textAlign="center" gutterBottom>📊 챌린지 유형별 성공률</Typography>
+        <h2 className="text-lg font-semibold text-gray-800 mb-3 text-center">🕓 평가 대기 중 챌린지</h2>
+        {pendingEval.length === 0 ? (
+          <p className="text-center text-gray-500">평가 대기 중인 챌린지가 없습니다.</p>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {pendingEval.map((c) => (
+              <div
+                key={c.id}
+                className="p-4 shadow rounded-xl cursor-pointer hover:shadow-md border"
+                onClick={() => navigate(`/challenges/detail/${c.id}`)}
+              >
+                <p className="font-semibold">유형: {typeLabel[c.type]}</p>
+                {c.targetCategory && <p>카테고리: {c.targetCategory}</p>}
+                {c.targetAmount != null && <p>목표 금액: ₩{c.targetAmount.toLocaleString()}</p>}
+                <p>기간: {c.startDate} ~ {c.endDate}</p>
+                <p className="text-gray-500 font-medium">{getStatusText(c)}</p>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+
+      <section>
+        <h2 className="text-lg font-semibold text-gray-800 mb-3 text-center">📊 챌린지 유형별 성공률</h2>
         {successRates.length > 0 ? (
-          <Box className="w-full h-72">
+          <div className="w-full h-72">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={successRates} barSize={40}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="type" />
                 <YAxis domain={[0, 100]} />
                 <Tooltip />
-                <Bar dataKey="successRate" fill="#4caf50" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="successRate" fill="#A5D8FF" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
-          </Box>
+          </div>
         ) : (
-          <Typography align="center" color="text.secondary">아직 성공한 챌린지가 없습니다.</Typography>
+          <p className="text-center text-gray-500">아직 성공한 챌린지가 없습니다.</p>
         )}
       </section>
 
       <section>
-        <Typography variant="h5" color="primary" textAlign="center" gutterBottom>📈 챌린지 참여 횟수</Typography>
+        <h2 className="text-lg font-semibold text-gray-800 mb-3 text-center">📈 챌린지 참여 횟수</h2>
         {successRates.length > 0 ? (
-          <Box className="w-full h-72">
+          <div className="w-full h-72">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={successRates} barSize={40}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="type" />
                 <YAxis />
                 <Tooltip />
-                <Bar dataKey="count" fill="#2196f3" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="count" fill="#C4B5FD" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
-          </Box>
+          </div>
         ) : (
-          <Typography align="center" color="text.secondary">챌린지 참여 이력이 없습니다.</Typography>
+          <p className="text-center text-gray-500">챌린지 참여 이력이 없습니다.</p>
         )}
       </section>
-    </Box>
+    </main>
   );
 }

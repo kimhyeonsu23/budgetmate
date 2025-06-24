@@ -17,13 +17,15 @@ export default function BottomNav() {
 
   return (
     <Paper
-      elevation={3}
+      elevation={6}
       sx={{
         position: 'fixed',
         bottom: 0,
         left: 0,
         right: 0,
         zIndex: 100,
+        borderTop: '1px solid #eee',
+        bgcolor: '#fafafa',
       }}
     >
       <BottomNavigation
@@ -32,12 +34,36 @@ export default function BottomNav() {
           setValue(newValue)
           navigate(newValue)
         }}
-        showLabels
+        sx={{
+          '& .Mui-selected': {
+            color: '#1976d2',
+          },
+        }}
       >
-        <BottomNavigationAction label="홈" value="/home" icon={<HomeIcon />} />
-        <BottomNavigationAction label="영수증" value="/home/receipt" icon={<ReceiptIcon />} />
-        <BottomNavigationAction label="가계부" value="/ledger" icon={<BookIcon />} />
-        <BottomNavigationAction label="내 정보" value="/mypage" icon={<PersonIcon />} />
+        <BottomNavigationAction
+          label="홈"
+          value="/home"
+          icon={<HomeIcon />}
+          sx={{ minWidth: 60 }}
+        />
+        <BottomNavigationAction
+          label="영수증"
+          value="/home/receipt"
+          icon={<ReceiptIcon />}
+          sx={{ minWidth: 60 }}
+        />
+        <BottomNavigationAction
+          label="가계부"
+          value="/ledger"
+          icon={<BookIcon />}
+          sx={{ minWidth: 60 }}
+        />
+        <BottomNavigationAction
+          label="내 정보"
+          value="/mypage"
+          icon={<PersonIcon />}
+          sx={{ minWidth: 60 }}
+        />
       </BottomNavigation>
     </Paper>
   )

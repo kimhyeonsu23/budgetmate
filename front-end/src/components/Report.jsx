@@ -17,7 +17,7 @@ export default function Report() {
 
   const token = localStorage.getItem('accessToken');
   const headers = { Authorization: `Bearer ${token}` };
-  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#ed87d2', '#FA8042', '#F13342', '#b86bd6'];
+  const COLORS = ['#A5D8FF', '#B2F2BB', '#FFD6A5', '#FFC9DE', '#D0BFFF', '#FFF3BF', '#C3FAE8'];
 
   useEffect(() => {
     fetchMonthlyStats(selectedYear, selectedMonth);

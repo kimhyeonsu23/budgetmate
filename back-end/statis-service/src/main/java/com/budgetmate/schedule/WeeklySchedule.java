@@ -1,18 +1,14 @@
 package com.budgetmate.schedule;
 
 
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.util.List;
-
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.budgetmate.badgeTypeEnum.BadgeType;
 import com.budgetmate.dto.UserDto;
 import com.budgetmate.query.StatisQuery;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 
 
@@ -29,7 +25,7 @@ public class WeeklySchedule {
 	}
 	
 	@Transactional
-	@Scheduled(cron = "0 55 11 ? * SUN")
+	@Scheduled(cron = "0 58 11 ? * FRI")
 	public void WeeklyScheduleUpdate() { // CRON의 표현식 : 초 분 시 일 월 요일
 		
 

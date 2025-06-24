@@ -1,110 +1,112 @@
-import React, { useState, useEffect } from 'react'
-import { useSearchParams, useNavigate } from 'react-router-dom'
-import { Box, Typography, TextField, Button, Stack, Alert } from '@mui/material'
-import axios from 'axios'
+import React, { useState, useEffect } from 'react';
+import { useSearchParams, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 export default function ResetPasswordByCode() {
-  const [searchParams] = useSearchParams()
-  const navigate = useNavigate()
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
 
-  // 쿼리에서 email, code 값을 꺼냄
-  const emailQuery = searchParams.get('email') || ''
-  const codeQuery = searchParams.get('code') || ''
+  const emailQuery = searchParams.get('email') || '';
+  const codeQuery = searchParams.get('code') || '';
 
-  const [newPassword, setNewPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
-  const [message, setMessage] = useState('')
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (!emailQuery || !codeQuery) {
-      setError('유효하지 않은 접근입니다.')
+      setError('유효하지 않은 접근입니다.');
     }
-  }, [emailQuery, codeQuery])
+  }, [emailQuery, codeQuery]);
 
   const handleReset = async () => {
     if (!newPassword || !confirmPassword) {
-      setError('모든 필드를 입력해주세요.')
-      return
+      setError('모든 필드를 입력해주세요.');
+      return;
     }
     if (newPassword !== confirmPassword) {
-      setError('비밀번호와 확인 비밀번호가 일치하지 않습니다.')
-      return
+      setError('비밀번호와 확인 비밀번호가 일치하지 않습니다.');
+      return;
     }
-    setLoading(true)
-    setError('')
-    setMessage('')
+    setLoading(true);
+    setError('');
+    setMessage('');
     try {
-      // 비밀번호 재설정 요청: POST /user/reset-password-by-code
       const res = await axios.post('/user/reset-password-by-code', {
         email: emailQuery,
         code: codeQuery,
         newPassword,
-      })
-      // 성공 시 { success: true, message: "비밀번호가 성공적으로 변경되었습니다." }
+      });
       if (res.data.success) {
-        setMessage(res.data.message)
-        // 2초 뒤 로그인 페이지로 이동
-        setTimeout(() => navigate('/'), 2000)
+        setMessage(res.data.message);
+        setTimeout(() => navigate('/'), 2000);
       } else {
-        setError(res.data.message || '비밀번호 재설정에 실패했습니다.')
+        setError(res.data.message || '비밀번호 재설정에 실패했습니다.');
       }
     } catch (err) {
-      console.error('reset-password-by-code API 오류:', err)
-      setError(err.response?.data?.message || '비밀번호 재설정 중 오류가 발생했습니다.')
+      console.error('reset-password-by-code API 오류:', err);
+      setError(err.response?.data?.message || '비밀번호 재설정 중 오류가 발생했습니다.');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
-    <Box
-      component="main"
-      display="flex"
-      flexDirection="column"
-      alignItems="center"
-      sx={{ minHeight: '100vh', pt: 4, pb: 10, px: 2, bgcolor: 'background.default' }}
-    >
-      <Typography variant="h4" color="primary" gutterBottom>
-        새 비밀번호 설정
-      </Typography>
-      <Typography variant="body2" color="text.secondary" sx={{ mb: 3, textAlign: 'center' }}>
-        이메일({emailQuery})의 인증 코드({codeQuery})가 확인되었습니다. 새 비밀번호를 입력하세요.
-      </Typography>
+    <div className="min-h-screen bg-[#f9fafb] px-6 py-10 flex flex-col items-center">
+      <h1 className="text-2xl font-bold text-gray-800 mb-3">🔐 비밀번호 재설정</h1>
 
-      <Box sx={{ width: '100%', maxWidth: 400, mx: 'auto' }}>
-        <Stack spacing={2}>
-          <TextField
-            label="새 비밀번호"
+      <p className="text-sm text-center text-gray-600 mb-6">
+        <strong className="text-indigo-600">{emailQuery}</strong>의 인증 코드{' '}
+        <strong className="text-indigo-600">{codeQuery}</strong>가 확인되었습니다.
+      </p>
+
+      <div className="w-full max-w-xl space-y-5">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">새 비밀번호</label>
+          <input
             type="password"
-            fullWidth
-            variant="outlined"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
+            placeholder="새 비밀번호 입력"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-300"
           />
-          <TextField
-            label="비밀번호 확인"
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">비밀번호 확인</label>
+          <input
             type="password"
-            fullWidth
-            variant="outlined"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
+            placeholder="비밀번호 다시 입력"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-300"
           />
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleReset}
-            disabled={loading}
-            fullWidth
-          >
-            {loading ? '요청 중...' : '비밀번호 재설정'}
-          </Button>
+        </div>
 
-          {message && <Alert severity="success">{message}</Alert>}
-          {error && <Alert severity="error">{error}</Alert>}
-        </Stack>
-      </Box>
-    </Box>
-  )
+        <button
+          onClick={handleReset}
+          disabled={loading}
+          className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-xl transition"
+        >
+          {loading ? '요청 중...' : '비밀번호 재설정'}
+        </button>
+
+        {message && (
+          <p className="text-center text-sm text-green-600">{message}</p>
+        )}
+        {error && (
+          <p className="text-center text-sm text-red-500">{error}</p>
+        )}
+
+        <button
+          onClick={() => navigate(-1)}
+          className="w-full text-sm text-gray-500 text-center hover:underline mt-2"
+        >
+          ← 돌아가기
+        </button>
+      </div>
+    </div>
+  );
 }

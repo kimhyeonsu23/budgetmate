@@ -36,47 +36,54 @@ export default function LoginForm() {
       localStorage.setItem('userId', userId);
       localStorage.setItem('userName', userName);
       navigate('/home');
-    } catch (err) {
+    } catch {
       setError('서버 오류가 발생했습니다.');
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#fffaf2] flex flex-col items-center justify-center px-4">
-      <h1 className="text-4xl font-bold text-brown-800 mb-4">가계로그</h1>
-      <img src={icon} alt="아이콘" className="w-28 mb-6" />
+    <div className="min-h-screen bg-[#f9fafb] px-6 py-10 flex flex-col items-center">
+      <img src={icon} alt="앱 아이콘" className="w-24 mb-4" />
+      <h1 className="text-2xl font-bold text-gray-800 mb-6">Budgetmate</h1>
 
-      {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
+      {error && <p className="text-center text-sm text-red-500 mb-2">{error}</p>}
 
       <form onSubmit={handleLogin} className="w-full max-w-xl space-y-4">
-        <input
-          type="email"
-          placeholder="이메일"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="w-full border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-brown-400"
-        />
-        <input
-          type="password"
-          placeholder="비밀번호"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="w-full border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-brown-400"
-        />
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">이메일</label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="example@email.com"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-300"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">비밀번호</label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="비밀번호 입력"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-300"
+          />
+        </div>
 
         <button
           type="submit"
-          className="w-full bg-[#5D3A00] text-white py-3 rounded-md shadow hover:bg-[#4b2e00]"
+          className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-xl transition"
         >
           로그인
         </button>
 
-        <div className="flex items-center justify-center text-sm text-gray-500">또는</div>
+        <div className="text-sm text-center text-gray-500">또는</div>
 
         <button
           type="button"
           onClick={() => (window.location.href = KAKAO_AUTH_URL)}
-          className="w-full bg-[#FEE500] text-black font-semibold py-3 rounded-md hover:bg-[#fada00]"
+          className="w-full bg-[#FEE500] text-black font-semibold py-3 rounded-xl hover:bg-[#fada00] transition"
         >
           카카오로 로그인
         </button>
@@ -84,7 +91,7 @@ export default function LoginForm() {
         <button
           type="button"
           onClick={() => (window.location.href = GOOGLE_AUTH_URL)}
-          className="w-full bg-gray-100 text-gray-700 py-3 rounded-md border hover:bg-gray-200"
+          className="w-full bg-gray-100 text-gray-700 border border-gray-300 py-3 rounded-xl hover:bg-gray-200 transition"
         >
           구글로 로그인
         </button>
@@ -96,7 +103,7 @@ export default function LoginForm() {
 
         <p className="text-sm text-center text-gray-700">
           계정이 없으신가요?{' '}
-          <Link to="/signup" className="text-green-600 hover:underline">회원가입</Link>
+          <Link to="/signup" className="text-indigo-600 font-medium hover:underline">회원가입</Link>
         </p>
       </form>
     </div>

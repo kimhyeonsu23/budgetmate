@@ -3,6 +3,7 @@ package com.budgetmate.challenge.controller;
 import com.budgetmate.challenge.entity.ChallengeEntity;
 import com.budgetmate.challenge.repository.ChallengeRepository;
 import com.budgetmate.challenge.service.ChallengeEvaluationService;
+import com.budgetmate.challenge.util.TokenParser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +18,7 @@ public class ChallengeTestController {
 
     private final ChallengeRepository challengeRepository;
     private final ChallengeEvaluationService evaluationService;
+    private final TokenParser tokenParser;
 
     //  단일 챌린지 강제 평가 (ID로 평가)
     @PostMapping("/evaluate/{id}")
@@ -36,14 +38,21 @@ public class ChallengeTestController {
     public ResponseEntity<String> evaluateAllExpiredChallenges(
             @RequestHeader("Authorization") String authHeader) {
 
-        List<ChallengeEntity> expiredChallenges =
-                challengeRepository.findByEndDateBeforeAndEvaluatedFalseAndDeletedFalse(LocalDate.now());
+        Long userId = tokenParser.getUserIdFromToken(authHeader.replace("Bearer ", "").trim());
 
-        for (ChallengeEntity challenge : expiredChallenges) {
+        // 내 챌린지 중 평가되지 않고 종료된 챌린지만 조회
+        List<ChallengeEntity> myExpiredChallenges =
+                challengeRepository.findByEndDateBeforeAndEvaluatedFalseAndDeletedFalse(LocalDate.now())
+                        .stream()
+                        .filter(ch -> ch.getUserId().equals(userId))
+                        .toList();
+
+        for (ChallengeEntity challenge : myExpiredChallenges) {
             evaluationService.evaluateChallenge(challenge, authHeader);
         }
 
-        return ResponseEntity.ok("만료 챌린지 모두 평가 완료");
+        return ResponseEntity.ok("내 만료 챌린지 모두 평가 완료");
     }
+
 
 }

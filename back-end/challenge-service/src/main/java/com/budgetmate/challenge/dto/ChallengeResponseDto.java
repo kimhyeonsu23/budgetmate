@@ -18,4 +18,5 @@ public class ChallengeResponseDto {
     private LocalDate startDate;
     private LocalDate endDate;
     private boolean success;
+    private boolean evaluated;
 }

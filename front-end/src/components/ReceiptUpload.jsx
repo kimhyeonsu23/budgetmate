@@ -1,48 +1,46 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from 'react'
+import axios from 'axios'
 
 export default function ReceiptUpload() {
-  const [image, setImage] = useState(null);
-  const [ocrResult, setOcrResult] = useState(null);
-  const [keywordId, setKeywordId] = useState('');
-  const [isEditing, setIsEditing] = useState(false);
-  const [loadingOCR, setLoadingOCR] = useState(false);
-  const [currentUserId, setCurrentUserId] = useState(null);
+  const [image, setImage] = useState(null)
+  const [ocrResult, setOcrResult] = useState(null)
+  const [keywordId, setKeywordId] = useState('')
+  const [isEditing, setIsEditing] = useState(false)
+  const [loadingOCR, setLoadingOCR] = useState(false)
+  const [currentUserId, setCurrentUserId] = useState(null)
 
   useEffect(() => {
-    const savedId = localStorage.getItem('userId');
-    if (savedId) setCurrentUserId(Number(savedId));
-  }, []);
+    const savedId = localStorage.getItem('userId')
+    if (savedId) setCurrentUserId(Number(savedId))
+  }, [])
 
   const categories = [
     { id: 1, name: '외식' }, { id: 2, name: '교통' }, { id: 3, name: '생활비' },
     { id: 4, name: '쇼핑' }, { id: 5, name: '건강' }, { id: 6, name: '교육' },
     { id: 7, name: '저축/투자' }, { id: 8, name: '수입' }
-  ];
+  ]
 
   const handleOCR = async () => {
-    if (!image) return alert('이미지를 선택하세요!');
-    setLoadingOCR(true);
-
+    if (!image) return alert('이미지를 선택하세요!')
+    setLoadingOCR(true)
     try {
-      const uploadForm = new FormData();
-      uploadForm.append('image', image);
-      const uploadRes = await axios.post('/receipt/image/upload', uploadForm, { withCredentials: true });
-      const relativePath = uploadRes.data;
-      const ocrRes = await axios.post(`/receipt/ocr?path=${encodeURIComponent(relativePath)}`, {}, { withCredentials: true });
-      setOcrResult({ ...ocrRes.data, imagePath: relativePath });
-      setIsEditing(false);
+      const form = new FormData()
+      form.append('image', image)
+      const uploadRes = await axios.post('/receipt/image/upload', form, { withCredentials: true })
+      const relativePath = uploadRes.data
+      const ocrRes = await axios.post(`/receipt/ocr?path=${encodeURIComponent(relativePath)}`, {}, { withCredentials: true })
+      setOcrResult({ ...ocrRes.data, imagePath: relativePath })
+      setIsEditing(false)
     } catch (err) {
-      alert('OCR 요청 실패: ' + (err.response?.data?.message || err.message));
+      alert('OCR 요청 실패: ' + (err.response?.data?.message || err.message))
     } finally {
-      setLoadingOCR(false);
+      setLoadingOCR(false)
     }
-  };
+  }
 
   const handleCreateReceipt = async () => {
-    if (!ocrResult || !keywordId) return alert('OCR 분석 후 카테고리를 선택하세요!');
-    if (!currentUserId) return alert('로그인이 필요합니다.');
-
+    if (!ocrResult || !keywordId) return alert('OCR 분석 후 카테고리를 선택하세요!')
+    if (!currentUserId) return alert('로그인이 필요합니다.')
     try {
       await axios.post('/receipt/ocr/save/v2', {
         path: ocrResult.imagePath,
@@ -52,61 +50,71 @@ export default function ReceiptUpload() {
         date: ocrResult.date,
         totalPrice: ocrResult.totalPrice,
         items: ocrResult.items ?? []
-      }, { withCredentials: true });
+      }, { withCredentials: true })
 
-      alert('영수증 등록 완료!');
-      setImage(null);
-      setOcrResult(null);
-      setKeywordId('');
+      alert('영수증 등록 완료!')
+      setImage(null)
+      setOcrResult(null)
+      setKeywordId('')
     } catch (err) {
-      alert('영수증 저장 실패: ' + err.message);
+      alert('영수증 저장 실패: ' + err.message)
     }
-  };
+  }
 
   const handleInputChange = (field, value) => {
-    if (!ocrResult) return;
-    const updated = { ...ocrResult };
-    updated[field] = field === 'totalPrice' ? parseInt(value.replace(/\D/g, ''), 10) || 0 : value;
-    setOcrResult(updated);
-  };
-
+    if (!ocrResult) return
+    const updated = { ...ocrResult }
+    updated[field] = field === 'totalPrice' ? parseInt(value.replace(/\D/g, ''), 10) || 0 : value
+    setOcrResult(updated)
+  }
   return (
-    <div className="flex-grow bg-white py-10 px-4">
-      <div className="max-w-3xl mx-auto bg-white border border-gray-200 shadow-md rounded-xl p-8 space-y-6">
-        <h1 className="text-3xl font-bold text-center text-gray-800">영수증 등록</h1>
+    <div className="min-h-screen bg-gray-50 py-10 px-4 flex items-start justify-center">
+      <div className="w-full max-w-2xl space-y-6 p-6 bg-white rounded-xl shadow-md border border-gray-200">
+        <h1 className="text-2xl font-bold text-gray-800 text-center">영수증 등록</h1>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <label className="block">
-            <span className="text-sm font-medium text-gray-700">📸 영수증 촬영</span>
+          <label className="w-full">
+            <span className="block text-sm font-medium text-gray-700 mb-1">📸 촬영하기</span>
             <input
               type="file"
               accept="image/*"
               capture="environment"
-              className="mt-1 block w-full border border-gray-300 rounded px-3 py-2 shadow-sm"
               onChange={e => setImage(e.target.files?.[0] || null)}
+              className="w-full border px-4 py-2 rounded-md text-sm shadow-sm"
             />
           </label>
 
-          <label className="block">
-            <span className="text-sm font-medium text-gray-700">🖼️ 이미지 선택</span>
+          <label className="w-full">
+            <span className="block text-sm font-medium text-gray-700 mb-1">🖼 갤러리에서 선택</span>
             <input
               type="file"
               accept="image/*"
-              className="mt-1 block w-full border border-gray-300 rounded px-3 py-2 shadow-sm"
               onChange={e => setImage(e.target.files?.[0] || null)}
+              className="w-full border px-4 py-2 rounded-md text-sm shadow-sm"
             />
           </label>
         </div>
 
-        {image && <p className="text-green-700 text-sm text-center">✅ 선택된 파일: {image.name}</p>}
+        {image && (
+          <p className="text-xs text-green-600 mt-2 text-center">선택된 파일: {image.name}</p>
+        )}
 
-        <div className="text-center">
+        <div className="flex flex-col gap-3 mt-4">
           <button
             onClick={handleOCR}
             disabled={loadingOCR}
-            className="mt-2 px-6 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-900 disabled:opacity-50"
+            className="w-full px-5 py-2 text-white font-medium rounded-md transition"
+            style={{ backgroundColor: '#5c6ac4', opacity: loadingOCR ? 0.6 : 1 }}
           >
-            {loadingOCR ? '분석 중...' : 'OCR 분석 시작'}
+            {loadingOCR ? '분석 중...' : '📄 OCR 분석 시작'}
+          </button>
+
+          <button
+            onClick={() => window.location.href = '/ledger/manual'}
+            className="w-full px-5 py-2 text-white font-medium rounded-md transition"
+            style={{ backgroundColor: '#5c6ac4' }}
+          >
+            ✍️ 수동 입력으로 등록하기
           </button>
         </div>
 
@@ -139,11 +147,14 @@ export default function ReceiptUpload() {
             </div>
 
             {ocrResult.imagePath && (
-              <img
-                src={`/receipt/image/${ocrResult.imagePath}`}
-                alt="영수증"
-                className="max-w-full h-auto rounded-lg border border-gray-300"
-              />
+              <div className="mt-4">
+                <h3 className="text-sm font-semibold text-gray-700 mb-1">🖼 인식된 이미지</h3>
+                <img
+                  src={`/receipt/image/${ocrResult.imagePath}`}
+                  alt="영수증 미리보기"
+                  className="w-full max-w-xs mx-auto rounded-lg border shadow"
+                />
+              </div>
             )}
 
             <div>
@@ -201,13 +212,14 @@ export default function ReceiptUpload() {
             <div className="grid grid-cols-2 gap-4 mt-6">
               <button
                 onClick={handleCreateReceipt}
-                className="w-full px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-800"
+                className="w-full px-4 py-2 rounded-md font-bold text-white"
+                style={{ backgroundColor: '#5c6ac4' }}
               >
                 💾 영수증 저장
               </button>
               <button
                 onClick={() => setIsEditing(!isEditing)}
-                className="w-full px-4 py-2 border border-gray-400 rounded"
+                className="w-full px-4 py-2 border border-gray-400 rounded-md font-semibold"
               >
                 ✏️ {isEditing ? '수정 완료' : '영수증 수정'}
               </button>
@@ -216,5 +228,5 @@ export default function ReceiptUpload() {
         )}
       </div>
     </div>
-  );
+  )
 }

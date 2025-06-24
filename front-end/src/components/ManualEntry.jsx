@@ -63,7 +63,7 @@ export default function ManualEntry() {
     }
 
     const payload = {
-      date: formatDateToYYYYMMDD(date), 
+      date: formatDateToYYYYMMDD(date),
       shop: description.trim() || category,
       userId: parseInt(userId),
       keywordId: keywordMap[category],
@@ -97,25 +97,20 @@ export default function ManualEntry() {
     <Box
       component="main"
       sx={{
-        bgcolor: '#FFFDF7',
+        bgcolor: '#f8fafc',
         minHeight: '100vh',
-        py: 6,
+        py: 8,
         px: 2,
         display: 'flex',
         justifyContent: 'center',
       }}
     >
       <Paper
-        elevation={3}
-        sx={{
-          width: '100%',
-          maxWidth: 500,
-          p: 4,
-          bgcolor: '#ffffff',
-        }}
+        elevation={2}
+        sx={{ width: '100%', maxWidth: 500, p: 4, borderRadius: 3 }}
       >
-        <Typography variant="h5" gutterBottom>
-          수동 가계부 입력
+        <Typography variant="h5" fontWeight="bold" gutterBottom>
+          ✍️ 수동 입력
         </Typography>
 
         {error && (
@@ -127,21 +122,22 @@ export default function ManualEntry() {
         <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={koLocale}>
           <Box component="form" onSubmit={handleSubmit}>
             <DatePicker
-              label="날짜"
+              label="날짜 선택"
               value={date}
               onChange={(newDate) => setDate(newDate)}
               renderInput={(params) => (
-                <TextField {...params} fullWidth margin="normal" />
+                <TextField {...params} fullWidth margin="normal" size="small" />
               )}
             />
 
             <TextField
               select
-              label="카테고리"
+              label="카테고리 선택"
               value={category}
               onChange={(e) => setCategory(e.target.value)}
               fullWidth
               margin="normal"
+              size="small"
             >
               <MenuItem value="">
                 <em>선택하세요</em>
@@ -159,6 +155,7 @@ export default function ManualEntry() {
               onChange={(e) => setDescription(e.target.value)}
               fullWidth
               margin="normal"
+              size="small"
             />
 
             <TextField
@@ -168,20 +165,27 @@ export default function ManualEntry() {
               onChange={(e) => setAmount(e.target.value)}
               fullWidth
               margin="normal"
+              size="small"
             />
 
             <Stack direction="row" spacing={2} mt={4} justifyContent="flex-end">
               <Button
                 variant="outlined"
                 onClick={() => navigate('/ledger')}
-                sx={{ textTransform: 'none' }}
+                sx={{ textTransform: 'none', borderRadius: '999px', fontWeight: 'bold' }}
               >
                 취소
               </Button>
               <Button
                 variant="contained"
                 type="submit"
-                sx={{ textTransform: 'none' }}
+                sx={{
+                  textTransform: 'none',
+                  backgroundColor: '#5c6ac4',
+                  '&:hover': { backgroundColor: '#3f51b5' },
+                  borderRadius: '999px',
+                  fontWeight: 'bold',
+                }}
               >
                 저장
               </Button>

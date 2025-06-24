@@ -1,175 +1,138 @@
-import React, { useState, useEffect } from 'react'
-import { useSearchParams, useNavigate } from 'react-router-dom'
-import { Box, Typography, TextField, Button, Stack, Alert } from '@mui/material'
-import axios from 'axios'
+import React, { useState, useEffect } from 'react';
+import { useSearchParams, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 export default function VerifyResetCode() {
-  const [searchParams] = useSearchParams()
-  const navigate = useNavigate()
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const emailQuery = searchParams.get('email') || '';
 
-  const emailQuery = searchParams.get('email') || ''
-
-  const [code, setCode] = useState('')
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
-
-  const [remainingSeconds, setRemainingSeconds] = useState(300)
-
-  const [reloadMessage, setReloadMessage] = useState('')
+  const [code, setCode] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [remainingSeconds, setRemainingSeconds] = useState(300);
+  const [reloadMessage, setReloadMessage] = useState('');
 
   useEffect(() => {
-    if (!emailQuery) {
-      setError('유효하지 않은 접근입니다.')
-    }
-  }, [emailQuery])
+    if (!emailQuery) setError('유효하지 않은 접근입니다.');
+  }, [emailQuery]);
 
   useEffect(() => {
-    if (remainingSeconds <= 0) {
-      return // 0 이하가 되면 더 이상 타이머를 돌리지 않음
-    }
+    if (remainingSeconds <= 0) return;
     const intervalId = setInterval(() => {
-      setRemainingSeconds((prev) => prev - 1)
-    }, 1000)
+      setRemainingSeconds((prev) => prev - 1);
+    }, 1000);
+    return () => clearInterval(intervalId);
+  }, [remainingSeconds]);
 
-    return () => clearInterval(intervalId)
-  }, [remainingSeconds])
-
-  // 초 단위 숫자를 "MM:SS" 형식 문자열로 변환해 주는 헬퍼 함수
   const formatTime = (seconds) => {
-    const mins = Math.floor(seconds / 60)
-    const secs = seconds % 60
-    const mm = String(mins).padStart(2, '0')
-    const ss = String(secs).padStart(2, '0')
-    return `${mm}:${ss}`
-  }
+    const mm = String(Math.floor(seconds / 60)).padStart(2, '0');
+    const ss = String(seconds % 60).padStart(2, '0');
+    return `${mm}:${ss}`;
+  };
 
-  // 인증 코드 재요청 (남은 시간 초기화, 코드 발송)
   const handleResendCode = async () => {
-    setLoading(true)
-    setError('')
-    setReloadMessage('')
+    setLoading(true);
+    setError('');
+    setReloadMessage('');
     try {
-      const res = await axios.post('/user/send-reset-code', { email: emailQuery })
+      const res = await axios.post('/user/send-reset-code', { email: emailQuery });
       if (res.data.success) {
-        setReloadMessage('새 인증 코드를 발송했습니다.')
-        setRemainingSeconds(300) // 5분(300초)으로 초기화
-        setCode('')              // 입력창 비우기
+        setReloadMessage('새 인증 코드를 발송했습니다.');
+        setRemainingSeconds(300);
+        setCode('');
       } else {
-        setError(res.data.message || '인증 코드 재요청에 실패했습니다.')
+        setError(res.data.message || '인증 코드 재요청에 실패했습니다.');
       }
     } catch (err) {
-      console.error('send-reset-code API 오류:', err)
-      setError(err.response?.data?.message || '인증 코드 재요청 중 오류가 발생했습니다.')
+      console.error('send-reset-code API 오류:', err);
+      setError(err.response?.data?.message || '인증 코드 재요청 중 오류가 발생했습니다.');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleVerifyCode = async () => {
-    if (!code.trim()) {
-      setError('인증 코드를 입력해주세요.')
-      return
-    }
+    if (!code.trim()) return setError('인증 코드를 입력해주세요.');
     if (remainingSeconds <= 0) {
-      setError('인증 시간이 만료되었습니다. 재요청 버튼을 눌러주세요.')
-      return
+      setError('인증 시간이 만료되었습니다. 재요청 버튼을 눌러주세요.');
+      return;
     }
-
-    setLoading(true)
-    setError('')
-    setReloadMessage('')
+    setLoading(true);
+    setError('');
+    setReloadMessage('');
     try {
       const res = await axios.post('/user/verify-reset-code', {
         email: emailQuery,
         code: code.trim(),
-      })
+      });
       if (res.data.verified) {
-        navigate(
-          `/reset-password-by-code?email=${encodeURIComponent(emailQuery)}&code=${encodeURIComponent(
-            code.trim()
-          )}`
-        )
+        navigate(`/reset-password-by-code?email=${encodeURIComponent(emailQuery)}&code=${encodeURIComponent(code.trim())}`);
       } else {
-        setError(res.data.message || '인증 코드가 일치하지 않습니다.')
+        setError(res.data.message || '인증 코드가 일치하지 않습니다.');
       }
     } catch (err) {
-      console.error('verify-reset-code API 오류:', err)
-      const msg = err.response?.data?.message || '인증 코드 확인 중 오류가 발생했습니다.'
-      setError(msg)
+      console.error('verify-reset-code API 오류:', err);
+      setError(err.response?.data?.message || '인증 코드 확인 중 오류가 발생했습니다.');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
-    <Box
-      component="main"
-      display="flex"
-      flexDirection="column"
-      alignItems="center"
-      sx={{ minHeight: '100vh', pt: 4, pb: 10, px: 2, bgcolor: 'background.default' }}
-    >
-      <Typography variant="h4" color="primary" gutterBottom>
-        인증 코드 입력
-      </Typography>
-      <Typography
-        variant="body2"
-        color="text.secondary"
-        sx={{ mb: 1, textAlign: 'center' }}
-      >
-        이메일({emailQuery})로 받은 인증 코드를 입력하세요.
-      </Typography>
+    <div className="min-h-screen bg-[#f9fafb] px-6 py-10 flex flex-col items-center">
+      <h1 className="text-2xl font-bold text-gray-800 mb-3">📮 인증 코드 입력</h1>
 
-      <Typography
-        variant="subtitle1"
-        color={remainingSeconds > 0 ? 'text.primary' : 'error'}
-        sx={{ mb: 3, textAlign: 'center', fontFamily: 'monospace' }}
-      >
+      <p className="text-sm text-center text-gray-600 mb-1">
+        이메일 <strong className="text-indigo-600">{emailQuery}</strong>로 전송된 인증 코드를 입력하세요.
+      </p>
+
+      <p className={`text-center text-sm font-mono mb-4 ${remainingSeconds > 0 ? 'text-gray-700' : 'text-red-500'}`}>
         {remainingSeconds > 0
           ? `남은 시간: ${formatTime(remainingSeconds)}`
           : '인증 시간이 만료되었습니다.'}
-      </Typography>
+      </p>
 
-      <Box sx={{ width: '100%', maxWidth: 400, mx: 'auto' }}>
-        <Stack spacing={2}>
-          <TextField
-            label="인증 코드"
-            fullWidth
-            variant="outlined"
+      {error && <p className="text-center text-sm text-red-500 mb-1">{error}</p>}
+      {reloadMessage && <p className="text-center text-sm text-green-600 mb-1">{reloadMessage}</p>}
+
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleVerifyCode();
+        }}
+        className="w-full max-w-xl space-y-4"
+      >
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">인증 코드</label>
+          <input
+            type="text"
             value={code}
             onChange={(e) => setCode(e.target.value)}
-            error={!!error}
-            helperText={error}
+            placeholder="6자리 코드 입력"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-300"
           />
+        </div>
 
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleVerifyCode}
-            disabled={loading || remainingSeconds <= 0}
-            fullWidth
+        <button
+          type="submit"
+          disabled={loading || remainingSeconds <= 0}
+          className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-xl transition"
+        >
+          {loading ? '확인 중...' : '코드 확인'}
+        </button>
+
+        {remainingSeconds <= 0 && (
+          <button
+            type="button"
+            onClick={handleResendCode}
+            disabled={loading}
+            className="w-full border border-indigo-500 text-indigo-600 font-medium py-3 rounded-xl hover:bg-indigo-50 transition"
           >
-            {loading ? '확인 중...' : '코드 확인'}
-          </Button>
-
-          {remainingSeconds <= 0 && (
-            <>
-              {reloadMessage && (
-                <Alert severity="success">{reloadMessage}</Alert>
-              )}
-              <Button
-                variant="outlined"
-                color="primary"
-                onClick={handleResendCode}
-                disabled={loading}
-                fullWidth
-              >
-                {loading ? '재요청 중...' : '인증 코드 재요청'}
-              </Button>
-            </>
-          )}
-        </Stack>
-      </Box>
-    </Box>
-  )
+            {loading ? '재요청 중...' : '인증 코드 재요청'}
+          </button>
+        )}
+      </form>
+    </div>
+  );
 }

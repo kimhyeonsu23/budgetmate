@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Box, Typography, TextField, Button, Stack, Alert } from '@mui/material'
 import axios from 'axios'
 
 export default function FindPassword() {
@@ -23,7 +22,6 @@ export default function FindPassword() {
 
       if (res.data.success) {
         setMessage(res.data.message)
-        
         setTimeout(() => {
           navigate(`/verify-reset-code?email=${encodeURIComponent(email.trim())}`)
         }, 1000)
@@ -39,67 +37,46 @@ export default function FindPassword() {
   }
 
   return (
-    <Box
-      component="main"
-      display="flex"
-      flexDirection="column"
-      alignItems="center"
-      sx={{
-        minHeight: '100vh',
-        pt: 4,
-        pb: 10,
-        px: 2,
-        bgcolor: 'background.default',
-      }}
-    >
-      <Typography variant="h4" gutterBottom color="primary" sx={{ textAlign: 'center' }}>
-        비밀번호 찾기
-      </Typography>
-      <Typography variant="body2" color="text.secondary" sx={{ mb: 3, textAlign: 'center' }}>
-        가입된 이메일을 입력하시면 인증 코드를 이메일로 보내드립니다.
-      </Typography>
+    <div className="min-h-screen bg-[#f9fafb] px-6 py-10 flex flex-col items-center">
+      <h1 className="text-2xl font-bold text-gray-800 mb-4">📧 비밀번호 찾기</h1>
+      <p className="text-sm text-center text-gray-600 mb-6">
+        가입한 이메일을 입력하시면 인증 코드를 전송해드릴게요.
+      </p>
 
-      <Box
-        sx={{
-          width: '100%',
-          maxWidth: { xs: '100%', sm: 360, md: 600, lg: 800 },
-          mx: 'auto',
-        }}
-      >
-        <Stack spacing={2}>
-          <TextField
-            label="이메일"
+      <div className="w-full max-w-xl space-y-6">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">이메일</label>
+          <input
             type="email"
-            fullWidth
-            variant="outlined"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            error={!!error && !message}
-            helperText={error && !message ? error : ''}
+            placeholder="example@email.com"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-indigo-300 focus:border-indigo-300"
           />
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleFindPassword}
-            disabled={loading}
-            fullWidth
-          >
-            {loading ? '요청 중...' : '인증 코드 받기'}
-          </Button>
+          {error && !message && (
+            <p className="mt-1 text-sm text-red-500">{error}</p>
+          )}
+        </div>
 
-          {/* 성공 시, 인증 코드가 발송되었다는 메시지 표시 */}
-          {message && <Alert severity="success">{message}</Alert>}
+        <button
+          onClick={handleFindPassword}
+          disabled={loading}
+          className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-xl transition"
+        >
+          {loading ? '요청 중...' : '인증 코드 받기'}
+        </button>
 
-          <Button
-            variant="text"
-            onClick={() => navigate('/')}
-            color="secondary"
-            sx={{ mt: 2 }}
-          >
-            로그인 화면으로 돌아가기
-          </Button>
-        </Stack>
-      </Box>
-    </Box>
+        {message && (
+          <p className="text-center text-sm text-green-600">{message}</p>
+        )}
+
+        <button
+          onClick={() => navigate('/')}
+          className="block w-full text-sm text-gray-500 text-center hover:underline"
+        >
+          ← 로그인 화면으로 돌아가기
+        </button>
+      </div>
+    </div>
   )
 }

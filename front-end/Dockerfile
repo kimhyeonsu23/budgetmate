@@ -1,8 +1,12 @@
 # 1단계: 빌드
 FROM node:18-alpine as builder
 WORKDIR /app
-COPY . .
+
+# package 파일 복사 및 패키지 설치
+COPY package.json package-lock.json ./
 RUN npm install
+
+COPY . .
 RUN npm run build
 
 # 2단계: 정적 서버로 배포
