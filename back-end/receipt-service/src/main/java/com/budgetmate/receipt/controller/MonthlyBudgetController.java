@@ -26,8 +26,16 @@ public class MonthlyBudgetController {
     ) {
         return repository.findByUserIdAndYearAndMonth(userId, year, month)
                 .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElse(ResponseEntity.ok(
+                        MonthlyBudgetEntity.builder()
+                                .userId(userId)
+                                .year(year)
+                                .month(month)
+                                .budget(0L) // ← 예산 기본값
+                                .build()
+                ));
     }
+
 
     @PostMapping
     public ResponseEntity<Void> setBudget(@RequestBody MonthlyBudgetEntity dto) {
