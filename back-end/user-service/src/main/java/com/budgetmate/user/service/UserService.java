@@ -404,9 +404,11 @@ public class UserService {
             }
 
         } catch (HttpClientErrorException.BadRequest e) {
-            throw new RuntimeException("이미 사용된 인가 코드입니다.");
+            log.error("🔥 Kakao token request failed: {}", e.getResponseBodyAsString());  // ✅ 추가
+            throw new RuntimeException("카카오 토큰 요청 실패: " + e.getResponseBodyAsString());  // ✅ 추가
         }
     }
+
 
     // ──────────────────────────────────────────────────────────────────────────
     // 구글 액세스 토큰 요청

@@ -70,19 +70,4 @@ jobs:
       - name: Push challenge-service-image
         run: docker push khs23/challenge-service-image:latest
 
-      # front
-      - name: Build front-image
-        run: docker build -t khs23/front-image:latest ./front-end
-      - name: Push front-image
-        run: docker push khs23/front-image:latest
-
-      - name: Trigger Jenkins Job
-        run: |
-          curl -X POST "$JENKINS_URL/job/budgetmate-deploy/build" \
-          --user "$JENKINS_USER:$JENKINS_TOKEN"
-        env:
-          JENKINS_URL: ${{ secrets.JENKINS_URL }}
-          JENKINS_USER: ${{ secrets.JENKINS_USER }}
-          JENKINS_TOKEN: ${{ secrets.JENKINS_TOKEN }}
-
 
