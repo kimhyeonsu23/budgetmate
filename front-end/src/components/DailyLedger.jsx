@@ -274,7 +274,7 @@ export default function DailyLedger() {
                 )}
                 {e.imagePath && (
                   <img
-                    src={`/receipt/image/${encodeURIComponent(e.imagePath)}`}
+                    src={`http://14.63.178.147:8090/receipt/image/${encodeURIComponent(e.imagePath)}`}
                     alt="영수증 원본"
                     className="mt-2 w-48 border rounded shadow"
                   />

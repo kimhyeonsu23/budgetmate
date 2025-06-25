@@ -78,6 +78,7 @@ services:
         condition: service_healthy
     environment:
       - SPRING_PROFILES_ACTIVE=user-docker
+      - GOOGLE_TOKEN=${GOOGLE_TOKEN}
     networks:
       - budgetmate-compose
 
