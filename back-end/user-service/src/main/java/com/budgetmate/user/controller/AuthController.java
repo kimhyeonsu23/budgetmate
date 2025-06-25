@@ -276,6 +276,7 @@ public class AuthController {
         resp.setEmail(user.getEmail());
         resp.setUserName(user.getUserName());
         resp.setRoles(user.getRoles());
+        resp.setPoint(user.getPoint());
         return ResponseEntity.ok(resp);
     }
 

@@ -2,8 +2,8 @@ services:
   eureka-server:
     image: khs23/eureka-server-image:latest
     container_name: eureka-server-container
-    #build:
-      #context: ./eureka-server
+      #build:
+    #context: ./eureka-server
     ports:
       - "8761:8761"
     healthcheck:
@@ -21,8 +21,8 @@ services:
   config-server:
     image: khs23/config-server-image:latest
     container_name: config-server-container
-    #build:
-      #context: ./config-server
+      #build:
+    #context: ./config-server
     ports:
       - "8888:8888"
     environment:
@@ -44,8 +44,8 @@ services:
   gateway:
     image: khs23/gateway-image:latest
     container_name: gateway-container
-    #build:
-      #context: ./gateway
+      #build:
+    #context: ./gateway
     ports:
       - "8090:8090"
     healthcheck:
@@ -63,8 +63,8 @@ services:
   user-service:
     image: khs23/user-service-image:latest
     container_name: user-service-container
-    #build:
-      #context: ./user-service
+      #build:
+    #context: ./user-service
     ports:
       - "8081:8081"
     depends_on:
@@ -86,8 +86,8 @@ services:
     volumes:
       - /home/ubuntu/upload/image:/upload/image
     container_name: receipt-service-container
-    #build:
-      #context: ./receipt-service
+      #build:
+    #context: ./receipt-service
     ports:
       - "8082:8082"
     depends_on:
@@ -107,8 +107,8 @@ services:
   statis-service:
     image: khs23/statis-service-image:latest
     container_name: statis-service-container
-    #build:
-      #context: ./statis-service
+      #build:
+    #context: ./statis-service
     ports:
       - "8083:8083"
     depends_on:
@@ -128,8 +128,8 @@ services:
   history-service:
     image: khs23/history-service-image:latest
     container_name: history-service-container
-    #build:
-      #context: ./history-service
+      #build:
+    #context: ./history-service
     ports:
       - "8084:8084"
     depends_on:

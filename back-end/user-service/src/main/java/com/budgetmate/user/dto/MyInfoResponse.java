@@ -12,4 +12,6 @@ public class MyInfoResponse {
     private String email;
     private String userName;
     private List<String> roles;
+    private Integer point;
+
 }
