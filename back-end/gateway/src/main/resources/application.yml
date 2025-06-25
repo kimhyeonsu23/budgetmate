@@ -107,8 +107,8 @@ spring:
               - http://localhost:5173
               - http://172.20.10.5:5173  # ← 실제 모바일 IP 주소로 명시
               - http://localhost:9090
-              - http://14.63.178.147:9090
               - http://14.63.178.147
+              - https://budgetmate.site
             allowedMethods: "*"
             allowedHeaders: "*"
             allowCredentials: true
