@@ -1,0 +1,20 @@
+package com.budgetmate.receipt.filter;
+
+import org.springframework.cloud.gateway.filter.GlobalFilter;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Mono;
+
+@Configuration
+public class LoggingFilter {
+
+    @Bean
+    public GlobalFilter logAuthHeaderFilter() {
+        return (exchange, chain) -> {
+            String authHeader = exchange.getRequest().getHeaders().getFirst("Authorization");
+            System.out.println("🛡️인증헤더 로그 검사 : Gateway Auth Header: " + authHeader);
+            return chain.filter(exchange);
+        };
+    }
+}
