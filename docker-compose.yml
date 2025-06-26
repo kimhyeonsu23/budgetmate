@@ -48,6 +48,8 @@ services:
     #context: ./gateway
     ports:
       - "8090:8090"
+    volumes:
+      - /home/ubuntu/upload/image:/upload/image
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8090/actuator/health"]
       interval: 5s
